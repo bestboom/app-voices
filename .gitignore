@@ -1,0 +1,16 @@
+# Editor
+.vscode/
+.idea/
+
+# SvelteKit
+.svelte-kit/
+
+# Docker (if keeping)
+docker-compose.yml
+Dockerfile
+
+# Local env files
+.env
+.env.local
+.env.example
+node_modules/

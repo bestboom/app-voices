@@ -1,0 +1,11 @@
+.git
+.github
+node_modules
+.svelte-kit
+.env
+Dockerfile*
+docker-compose*.yml
+.vercel
+.netlify
+.idea
+.vscode
