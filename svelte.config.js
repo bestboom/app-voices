@@ -18,7 +18,7 @@ const config = {
     adapter,
     paths: {
       base: '/aqua',      // for routing
-      assets: '/aqua'     // for static asset URLs
+      // assets: '/aqua'     // for static asset URLs
     },
     env: {
       privatePrefix: "KW_SECRET_",
