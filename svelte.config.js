@@ -16,10 +16,10 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter,
-    paths: {
-      base: '/aqua',      // for routing
-      // assets: '/aqua'     // for static asset URLs
-    },
+    // paths: {
+    //   base: '/aqua',      // for routing
+    //   // assets: '/aqua'     // for static asset URLs
+    // },
     env: {
       privatePrefix: "KW_SECRET_",
       publicPrefix: "KW_PUBLIC_"
