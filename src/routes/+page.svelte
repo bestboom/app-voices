@@ -45,21 +45,46 @@
     }
   };
 
-  const process = async () => {
-    if (loading) return;
-    if (!profile.text) return;
+  // const process = async () => {
+  //   if (loading) return;
+  //   if (!profile.text) return;
 
-    loading = true;
-    try {
-      voiceUrl = await generate(profile);
-      toaster.success("Audio generated successfully");
-    } catch (error) {
-      console.error(error);
-      toaster.error((error as any).message ?? "An error occurred, see console");
-    } finally {
-      loading = false;
-    }
-  };
+  //   loading = true;
+  //   try {
+  //     voiceUrl = await generate(profile);
+  //     toaster.success("Audio generated successfully");
+  //   } catch (error) {
+  //     console.error(error);
+  //     toaster.error((error as any).message ?? "An error occurred, see console");
+  //   } finally {
+  //     loading = false;
+  //   }
+  // };
+  const process = async () => {
+  if (loading) return;
+  if (!profile.text) {
+    toaster.error("Please enter some text before generating audio.");
+    return;
+  }
+
+  // 🛑 Prevent generating if no voice preset selected
+  if (!profile.voiceFormula || profile.voiceFormula.trim() === "") {
+    toaster.error("Please select a voice preset before generating audio.");
+    return;
+  }
+
+  loading = true;
+  try {
+    voiceUrl = await generate(profile);
+    toaster.success("Audio generated successfully");
+  } catch (error) {
+    console.error(error);
+    toaster.error((error as any).message ?? "An error occurred, see console");
+  } finally {
+    loading = false;
+  }
+};
+
 </script>
 
 {#if !authenticated}

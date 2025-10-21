@@ -1,60 +1,47 @@
 <script lang="ts">
   import { PRESET_FORMULAS, createExactFormula } from "$lib/client/utils/myVoice";
-  import { onMount } from "svelte";
   import { profile, getCurrentPreset } from "./store.svelte";
 
-  let selectedPreset: keyof typeof PRESET_FORMULAS = getCurrentPreset(profile.voiceFormula);
+  const presetKeys = Object.keys(PRESET_FORMULAS) as Array<keyof typeof PRESET_FORMULAS>;
+
+  // Initialize from profile only if formuala matches a preset; otherwise empty
+  let initial = getCurrentPreset(profile.voiceFormula);
+  let selectedPreset: keyof typeof PRESET_FORMULAS | "" = initial || "";
 
   function handlePresetChange(event: Event) {
     const target = event.target as HTMLSelectElement;
-    selectedPreset = target.value as keyof typeof PRESET_FORMULAS;
-    updateProfile();
+    selectedPreset = target.value as keyof typeof PRESET_FORMULAS | "";
+
+    if (selectedPreset) {
+      // Only update profile when a valid preset is selected
+      profile.voiceFormula = createExactFormula(selectedPreset);
+      profile.voiceMode = "advanced";
+    } else {
+      // If user explicitly selects the empty option, clear the profile formula
+      profile.voiceFormula = "";
+    }
   }
 
-  function updateProfile() {
-    profile.voiceFormula = createExactFormula(selectedPreset);
-    profile.voiceMode = "advanced";
-  }
-
-  // Reactive update when profile changes
-  $: {
-    selectedPreset = getCurrentPreset(profile.voiceFormula);
-  }
-
-  $: currentFormula = PRESET_FORMULAS[selectedPreset];
-  $: totalWeight = Object.values(currentFormula).reduce((sum, w) => sum + w, 0);
+  // derived (safe) values
+  $: currentFormula = selectedPreset ? PRESET_FORMULAS[selectedPreset] : null;
+  $: totalWeight = currentFormula ? Object.values(currentFormula).reduce((s, w) => s + w, 0) : 0;
 </script>
 
 <div>
   <div class="flex items-end justify-between">
-    <span class="text-xs font-semibold">
-      Voice Formula Preset
-    </span>
+    <span class="text-xs font-semibold">Voice Formula Preset</span>
   </div>
 
   <div class="mt-2">
-    <select 
-      class="select select-bordered w-full text-xs" 
+    <select
+      class="select select-bordered w-full text-xs"
       on:change={handlePresetChange}
-      value={selectedPreset}
+      bind:value={selectedPreset}
     >
-      <option value="verse">Verse Voice</option>
-      <option value="techio">Techio</option>
+      <option value="">-- Select a voice preset --</option>
+      {#each presetKeys as key}
+        <option value={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</option>
+      {/each}
     </select>
-
-    <!-- Uncomment if you want to show the formula and total weight -->
-    <!-- <div class="mt-2">
-      <input 
-        type="text" 
-        class="input input-bordered w-full text-xs mt-2" 
-        value={createExactFormula(selectedPreset)}
-        disabled
-        title="Active voice formula"
-      />
-    </div>
-    
-    <div class="text-xs mt-1 text-right {totalWeight === 1 ? 'text-green-600' : 'text-red-600'}">
-      Total: {(totalWeight * 100).toFixed(2)}%
-    </div> -->
   </div>
 </div>

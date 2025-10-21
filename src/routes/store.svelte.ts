@@ -1,20 +1,24 @@
+// src/lib/client/store.svelte.ts
 import { browser } from "$app/environment";
 import { detectWebGPU } from "$lib/client/utils";
 import {
   getRandomQuote,
   modelsMap,
-  voicesMap,
   type LangId,
   type ModelId,
 } from "$lib/shared/resources";
-import { PRESET_FORMULAS, createExactFormula } from "$lib/client/utils/myVoice";
+import {
+  PRESET_FORMULAS,
+  createExactFormula,
+  type PresetKey,
+} from "$lib/client/utils/myVoice";
 
 export interface ProfileData {
   name: string;
   text: string;
   lang: LangId;
   voiceMode: "simple" | "advanced";
-  voiceFormula: string;
+  voiceFormula: string; // can be empty string when not chosen
   model: ModelId;
   speed: number;
   format: "mp3" | "wav";
@@ -24,7 +28,7 @@ export interface ProfileData {
   apiKey: string;
 }
 
-function getCurrentHost() {
+function getCurrentHost(): string {
   if (!browser) return "";
   return `${window.location.protocol}//${window.location.host}`;
 }
@@ -34,7 +38,8 @@ export const defaultProfile: ProfileData = {
   text: getRandomQuote(),
   lang: "en-us",
   voiceMode: "advanced",
-  voiceFormula: createExactFormula('techio'), // Explicit default
+  // Start empty so user must choose
+  voiceFormula: "",
   model: modelsMap.model.id,
   speed: 1,
   format: "mp3",
@@ -48,16 +53,17 @@ export const profile: ProfileData = $state({
   ...defaultProfile,
 });
 
-// Add this function to help find current preset
-export function getCurrentPreset(formula: string): keyof typeof PRESET_FORMULAS {
-  const presets = Object.keys(PRESET_FORMULAS) as Array<keyof typeof PRESET_FORMULAS>;
-  return presets.find(preset => createExactFormula(preset) === formula) || 'techio';
+/**
+ * Returns which preset matches a formula.
+ * If formula is empty or no preset matches, returns the empty string "".
+ */
+export function getCurrentPreset(formula: string): PresetKey | "" {
+  if (!formula) return "";
+  const presets = Object.keys(PRESET_FORMULAS) as PresetKey[];
+  const match = presets.find((preset) => createExactFormula(preset) === formula);
+  return match ?? "";
 }
 
-export const loadProfile = (newProfile: ProfileData) => {
-  const keys = Object.keys(newProfile);
-  for (const key of keys) {
-    // @ts-ignore
-    profile[key] = newProfile[key];
-  }
-};
+export function loadProfile(newProfile: ProfileData) {
+  Object.assign(profile, newProfile);
+}
