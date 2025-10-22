@@ -43,6 +43,20 @@ export const PRESET_FORMULAS = {
     "bm_george": 19 / 128,
     "am_adam": 21 / 128,
   },
+    "history 2": {
+    "af_sky": 6 / 128,
+    "am_adam": 18 / 128,
+    "af_heart": 24 / 128,
+    "am_michael": 40 / 128,
+    "bm_daniel": 40 / 128,
+  },
+      "history 3": {
+    "af_heart": 2/ 128,
+    "bm_daniel": 90/ 128,
+    "am_fenrir": 16 / 128,
+    "am_liam": 10 / 128,
+    "am_eric": 10 / 128,
+  },
 } as const;
 
 /**
